@@ -1,0 +1,76 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite the manuscript below.
+  If you use the bundled demo dataset (data/weidner_sample/), please
+  also cite the Weidner et al. (2023) reference below, and see
+  data/README.md for further provenance notes.
+title: "tml-smlm: multi-scale topological machine learning for single-molecule localization microscopy"
+type: software
+version: 0.1.0
+license: GPL-3.0-or-later
+repository-code: "https://github.com/renatoiiibolo/tml-smlm"
+authors:
+  - given-names: "Renato III Fernan"
+    family-names: Bolo
+    email: rfbolo@up.edu.ph
+    affiliation: "Department of Physical Sciences and Mathematics, University of the Philippines Manila, 1000 Manila, Philippines"
+  - given-names: Myriam
+    family-names: Schäfer
+    affiliation: "Kirchhoff-Institute for Physics, Heidelberg University, Im Neuenheimer Feld 227, 69120 Heidelberg, Germany"
+  - given-names: "Ramon Jose C."
+    family-names: Bagunu
+    affiliation: "Department of Physical Sciences and Mathematics, University of the Philippines Manila, 1000 Manila, Philippines"
+  - given-names: Georg
+    family-names: Hildenbrand
+    affiliation: "Faculty of Engineering, University of Applied Sciences Aschaffenburg, Würzburger Str. 45, 63743 Aschaffenburg, Germany"
+  - given-names: Michael
+    family-names: Hausmann
+    affiliation: "Kirchhoff-Institute for Physics, Heidelberg University, Im Neuenheimer Feld 227, 69120 Heidelberg, Germany; Faculty of Engineering, University of Applied Sciences Aschaffenburg, Würzburger Str. 45, 63743 Aschaffenburg, Germany"
+preferred-citation:
+  type: unpublished
+  title: "Multi-scale topological machine learning disentangles chromatin damage nano-architecture in irradiated cells"
+  authors:
+    - given-names: "Renato III Fernan"
+      family-names: Bolo
+    - given-names: Myriam
+      family-names: Schäfer
+    - given-names: "Ramon Jose C."
+      family-names: Bagunu
+    - given-names: Georg
+      family-names: Hildenbrand
+    - given-names: Michael
+      family-names: Hausmann
+  notes: >-
+    Manuscript under review at Physical Biology (IOP Publishing) as of
+    September 2026 (manuscript reference PB-102268); not yet published.
+    This entry has no volume, page, or DOI information because none
+    exists yet — update it once the manuscript is accepted and formally
+    published.
+references:
+  - type: article
+    title: "Advanced image-free analysis of the nano-organization of chromatin and other biomolecules by single molecule localization microscopy (SMLM)"
+    authors:
+      - given-names: J.
+        family-names: Weidner
+      - given-names: C.
+        family-names: Neitzel
+      - given-names: M.
+        family-names: Gote
+      - given-names: J.
+        family-names: Deck
+      - given-names: "K. A."
+        family-names: Küntzelmann
+      - given-names: G.
+        family-names: Pilarczyk
+      - given-names: M.
+        family-names: Falk
+      - given-names: M.
+        family-names: Hausmann
+    journal: "Computational and Structural Biotechnology Journal"
+    volume: 21
+    start: 2018
+    end: 2034
+    year: 2023
+    doi: "10.1016/j.csbj.2023.03.009"
+    repository-code: "https://github.com/jonasw247/TDA_applied_on_SMLM"
+    notes: "Source of the demo dataset bundled in data/weidner_sample/; see data/README.md for full provenance and license notes."
