@@ -31,6 +31,8 @@ docs/                     — docs/view_tier_overview.md
 
 ## Quick start
 
+With conda:
+
 ```bash
 # create the environment
 conda env create -f environment.yml
@@ -42,6 +44,22 @@ pip install -e .
 # run the tutorial
 jupyter lab notebooks/01_getting_started.ipynb
 ```
+
+Without conda, a plain virtual environment works just as well — `pyproject.toml` declares every dependency the package itself needs, so `pip install -e .` pulls them all in:
+
+```bash
+python3 -m venv tml-smlm-env
+source tml-smlm-env/bin/activate      # on Windows: tml-smlm-env\Scripts\activate
+
+pip install -e .
+pip install jupyterlab ipykernel
+
+# make this environment selectable as a notebook kernel
+python -m ipykernel install --user --name tml-smlm --display-name "Python (tml-smlm)"
+
+jupyter lab notebooks/01_getting_started.ipynb
+```
+In Jupyter, select Kernel → Change Kernel → "Python (tml-smlm)" before running cells, since Jupyter does not automatically pick up a newly created environment's kernel.
 
 The tutorial notebook loads the bundled public demo dataset, computes real persistence diagrams, and runs a worked (if intentionally limited) example of each of the three Views at Tier 1. It takes a few minutes to run end to end — almost all of that time is genuine persistent-homology computation (`ripser`) and permutation testing, not overhead. See the notebook's own opening cells for what it can and can't show on this particular dataset.
 
