@@ -6,7 +6,7 @@ This module treats a persistence diagram as a point in a metric space and
 provides the machinery View 3 of the framework needs to work there: the
 2-Wasserstein (W2) distance between two diagrams, a pairwise distance matrix
 over a population of diagrams, and a fixed-cardinality Frechet mean/variance
-estimate following the iterative barycenter scheme of Munch et al. (2015).
+estimate following the iterative barycenter scheme of Turner et al. (2014).
 A medoid-based permutation test for group separation in Wasserstein space is
 also included, built on top of a precomputed pooled distance matrix so it
 never re-runs the (expensive) Frechet mean or additional W2 calls per
@@ -24,7 +24,13 @@ DESIGN NOTES
      matrix is the full (n + m) x (n + m) augmented assignment problem
      (each diagram implicitly extended by the diagonal).
 
-  3. Frechet mean: fixed-cardinality gradient descent (Munch et al. 2015).
+  3. Frechet mean: fixed-cardinality iterative barycenter update (Turner et
+     al. 2014: propose a mean, match it to every diagram, average the matched
+     points, repeat). Turner et al. start from a randomly drawn diagram; this
+     implementation starts from the population's medoid, so a given set of
+     diagrams always returns the same mean. The mean is a single
+     diagram-valued estimate, in contrast to the probabilistic Frechet mean
+     of Munch et al. (2015), which returns a distribution over diagrams.
      The mean diagram keeps the medoid's point count throughout; points
      unmatched in a given replicate are pulled toward their own current
      diagonal projection rather than added or removed dynamically. This is
@@ -173,8 +179,8 @@ def medoid_index(D: np.ndarray, indices: Optional[np.ndarray] = None) -> int:
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# FRECHET MEAN / VARIANCE  (design decision 3 -- Munch et al. 2015,
-# fixed-cardinality)
+# FRECHET MEAN / VARIANCE  (design decision 3 -- Turner et al. 2014,
+# fixed-cardinality, medoid-initialized)
 # ══════════════════════════════════════════════════════════════════════════
 
 def _single_diagram_match(Y: np.ndarray, dgm: np.ndarray) -> Tuple[float, np.ndarray]:

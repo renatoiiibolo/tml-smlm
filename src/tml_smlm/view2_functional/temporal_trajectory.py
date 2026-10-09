@@ -2,7 +2,7 @@
 View 2 (functional), Tier 3 — temporal trajectory of the discriminative
 spatial scale.
 
-Does the birth-radius position the fused-lasso fit selects as
+Does the birth-radius position the smooth-lasso fit selects as
 discriminative shift across the repair timecourse, or stay fixed? The
 birth-radius axis is a real physical length scale, so whether the selected
 position sits at a small scale (individual nascent foci) or a large one

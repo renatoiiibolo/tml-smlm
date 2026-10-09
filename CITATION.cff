@@ -6,7 +6,7 @@ message: >-
   data/README.md for further provenance notes.
 title: "tml-smlm: multi-scale topological machine learning for single-molecule localization microscopy"
 type: software
-version: 0.1.0
+version: 0.2.0
 license: GPL-3.0-or-later
 repository-code: "https://github.com/renatoiiibolo/tml-smlm"
 authors:
@@ -25,7 +25,7 @@ authors:
     affiliation: "Faculty of Engineering, University of Applied Sciences Aschaffenburg, Würzburger Str. 45, 63743 Aschaffenburg, Germany"
   - given-names: Michael
     family-names: Hausmann
-    affiliation: "Kirchhoff-Institute for Physics, Heidelberg University, Im Neuenheimer Feld 227, 69120 Heidelberg, Germany; Faculty of Engineering, University of Applied Sciences Aschaffenburg, Würzburger Str. 45, 63743 Aschaffenburg, Germany"
+    affiliation: "Kirchhoff-Institute for Physics, Heidelberg University, Im Neuenheimer Feld 227, 69120 Heidelberg, Germany"
 preferred-citation:
   type: unpublished
   title: "Multi-scale topological machine learning disentangles chromatin damage nano-architecture in irradiated cells"

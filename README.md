@@ -16,7 +16,9 @@ src/tml_smlm/
 ├── features/
 │   └── persistence_features.py (builds the shared persistence diagram every View reads)
 ├── view1_scalar/        — View 1: scalar / distributional summaries
-├── view2_functional/    — View 2: functional / local (persistence landscapes)
+│   └── descriptor_selection.py   (picks each stratum's leading descriptor and checks it survives dropping any one timepoint)
+├── view2_functional/    — View 2: functional / local (persistence landscapes, smooth-lasso localization)
+│   └── penalty_comparison.py     (checks the smooth-lasso penalty against a true L1 + L1 fused lasso)
 ├── view3_metric/        — View 3: metric / geometric (Wasserstein / Fréchet)
 ├── diagnostics/         — non-topological baseline + confound audits
 │   ├── size_confound_audit.py

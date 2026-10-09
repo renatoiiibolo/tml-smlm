@@ -202,6 +202,19 @@ def build_paired_dataset(
 # RESIDUALIZATION + CORRELATION
 # ══════════════════════════════════════════════════════════════════════════
 
+def _round_p(p: float) -> float:
+    """Round a p-value for JSON storage without losing small ones.
+
+    A plain six-decimal rounding would store any p below 5e-7 as exactly 0.0,
+    and the coupling p-values in the strongest strata are of order 1e-13 to
+    1e-7. p >= 1e-3 is rounded to six decimals; p < 1e-3 keeps four
+    significant figures."""
+    p = float(p)
+    if p >= 1e-3 or p == 0.0:
+        return round(p, 6)
+    return float(f"{p:.4g}")
+
+
 def _residualise_against_timepoint(df: pd.DataFrame, col: str, count_col: Optional[str] = None) -> pd.Series:
     """
     OLS(col ~ C(timepoint_label) [+ count_col]) -- descriptive/correlational,
@@ -248,11 +261,11 @@ def primary_test(paired: pd.DataFrame, marker_a: str, marker_b: str) -> Dict:
 
     rho, p = spearmanr(valid["resid_a"], valid["resid_b"])
     result["residual_spearman_rho"] = round(float(rho), 4)
-    result["residual_spearman_p"] = round(float(p), 6)
+    result["residual_spearman_p"] = _round_p(p)
 
     rho_raw, p_raw = spearmanr(d[col_a], d[col_b])
     result["raw_pooled_spearman_rho"] = round(float(rho_raw), 4)
-    result["raw_pooled_spearman_p"] = round(float(p_raw), 6)
+    result["raw_pooled_spearman_p"] = _round_p(p_raw)
     result["raw_pooled_note"] = "Descriptive only -- confounded by shared timepoint response, see module docstring. residual_* (timepoint only) is the primary test; residual_with_count_* below adds the count covariate."
 
     # Third tier: residualize against timepoint AND each marker's own n_localisations.
@@ -262,7 +275,7 @@ def primary_test(paired: pd.DataFrame, marker_a: str, marker_b: str) -> Dict:
     if len(valid_count) >= MIN_PAIRS_FOR_CORR:
         rho_c, p_c = spearmanr(valid_count["resid_a_count"], valid_count["resid_b_count"])
         result["residual_with_count_spearman_rho"] = round(float(rho_c), 4)
-        result["residual_with_count_spearman_p"] = round(float(p_c), 6)
+        result["residual_with_count_spearman_p"] = _round_p(p_c)
         result["residual_with_count_n_pairs"] = int(len(valid_count))
         result["residual_with_count_note"] = (
             "Residualized against timepoint AND each marker's own n_localisations. A coupling that survives here "
@@ -283,7 +296,7 @@ def secondary_stratified_test(paired: pd.DataFrame, marker_a: str, marker_b: str
             results[tp] = {"n": int(len(grp)), "skipped": f"n < {MIN_PAIRS_FOR_CORR}"}
             continue
         rho, p = spearmanr(grp[col_a], grp[col_b])
-        results[tp] = {"n": int(len(grp)), "spearman_rho": round(float(rho), 4), "spearman_p": round(float(p), 6)}
+        results[tp] = {"n": int(len(grp)), "spearman_rho": round(float(rho), 4), "spearman_p": _round_p(p)}
     return results
 
 

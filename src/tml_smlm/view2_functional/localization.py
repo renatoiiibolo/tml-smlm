@@ -3,12 +3,23 @@ View 2 (functional), Tier 1 — sparse localization along the birth-radius axis.
 
 A persistence diagram can be treated as a function of the filtration
 parameter: its persistence landscape. This module vectorizes landscapes
-onto a shared grid and uses a cross-validated fused-lasso fit to ask not
+onto a shared grid and uses a cross-validated smooth-lasso fit to ask not
 just *whether* two groups differ, but *where* along the birth-radius axis
-the difference is concentrated. The fusion penalty favors solutions where
-the selected grid positions are contiguous, so a hit reads as a localized
-region rather than scattered noise — the "sparse localization" the module
-implements.
+the difference is concentrated. The penalty is an L1 sparsity term plus an
+L2-squared penalty on the difference between adjacent coefficients, which
+favors selected grid positions that sit close together, so a hit reads as a
+localized region rather than scattered noise — the "sparse localization" the
+module implements.
+
+Method credit. Localizing a discriminative region along an ordered
+functional predictor follows the strategy of Tibshirani et al. (2005). The
+penalty itself is the Smooth-Lasso of Hebiri and van de Geer (2011, Eq. 3),
+and the reduction to an ordinary Lasso on an augmented, zero-padded design
+matrix used in `_fl_fit` is their Lemma 1. It is not Tibshirani et al.'s
+fused lasso, which penalizes the adjacent differences with an L1 term and
+rewards exactly flat runs. The `penalty_comparison` module tests that
+alternative directly on the paper's headline panels. Identifiers keep the
+`fl_` prefix and the `fused_lasso` result key for compatibility.
 
 Downstream modules (robustness, temporal-trajectory and coupling analyses)
 import several names from here directly and rely on their exact behavior:
@@ -107,8 +118,9 @@ def vectorise(diagrams: List[np.ndarray], k: int) -> Tuple[np.ndarray, np.ndarra
     built from the pooled death-time distribution (99th percentile as the
     cap, to keep a few extreme bars from stretching the whole axis) rather
     than per-diagram: every row of the resulting matrix has to be
-    comparable column-by-column for the fused lasso to treat columns as a
-    single ordered axis with a meaningful fusion penalty between neighbors.
+    comparable column-by-column for the smooth-lasso penalty to treat columns
+    as a single ordered axis with a meaningful difference penalty between
+    neighbors.
     """
     cleaned = [_clean(d) for d in diagrams]
     grid = _build_grid(cleaned)
@@ -138,7 +150,7 @@ def residualise(L: np.ndarray, covar: np.ndarray) -> np.ndarray:
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# FUSED LASSO
+# SMOOTH-LASSO FIT (identifiers keep the fl_ prefix; see module docstring)
 # ══════════════════════════════════════════════════════════════════════════
 
 def _D(p: int) -> np.ndarray:
@@ -150,9 +162,10 @@ def _D(p: int) -> np.ndarray:
 
 def _fl_fit(X: np.ndarray, y: np.ndarray, lam: float, warm_start_coef: Optional[np.ndarray] = None, tol: float = 1e-6) -> np.ndarray:
     """
-    One fused-lasso fit at a single lambda, via the standard trick of
-    augmenting X with lam * D (D the first-difference operator) and
-    y with zeros, then handing the whole thing to an ordinary Lasso.
+    One smooth-lasso fit at a single lambda, via the reduction of Hebiri and
+    van de Geer (2011, Lemma 1): augment X with lam * D (D the first-
+    difference operator) and y with zeros, then hand the whole thing to an
+    ordinary Lasso.
 
     warm_start_coef, when given, initializes coordinate descent from a
     nearby solution instead of zero. That only helps when the nearby
@@ -433,7 +446,7 @@ def main() -> int:
         fm["npz_file"] = fm.apply(lambda r: _npz_stem(r) + ".npz", axis=1)
 
     logger.info("=" * 70)
-    logger.info("View 2 / Tier 1 — persistence-landscape fused lasso localization")
+    logger.info("View 2 / Tier 1 — persistence-landscape smooth-lasso localization")
     logger.info("=" * 70)
     logger.info(f"Diagrams : {args.diagrams.resolve()}")
     logger.info(f"Sources  : {args.sources}")
@@ -475,7 +488,7 @@ def main() -> int:
     comp_df.to_csv(comp_path, index=False)
     logger.info(f"Comparison table -> {comp_path}  ({len(comp_df)} rows)")
 
-    logger.info("\n=== View 1 (scalar summary) vs View 2 (fused lasso) SUMMARY (lambda1 only) ===")
+    logger.info("\n=== View 1 (scalar summary) vs View 2 (smooth lasso) SUMMARY (lambda1 only) ===")
     if comp_df.empty:
         logger.warning("No panels produced a result (all skipped) -- nothing to summarize. Check n=20 minimum per panel and that diagrams/ has the expected .npz files.")
     else:

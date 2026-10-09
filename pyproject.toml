@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tml-smlm"
-version = "0.1.0"
+version = "0.2.0"
 description = "Topological machine learning for single-molecule localization microscopy: a multi-scale, confound-audited pipeline for punctate subcellular structures"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }

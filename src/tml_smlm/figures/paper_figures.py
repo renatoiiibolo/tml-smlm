@@ -214,11 +214,37 @@ def _write_notes(out_dir: Path, stem: str, text: str) -> None:
     logger.info(f"  Notes -> {path.name}")
 
 
-def _fmt_p(p: float) -> str:
-    """p-value annotation. Some of these underflow to exactly 0.0 in double
-    precision; report those as an explicit upper bound rather than '0.0'."""
+P_ROUNDING_FLOOR = 5e-7
+"""Smallest p that survives `round(p, 6)`. A stored p of exactly 0.0 from a
+result file written with six-decimal rounding means "below 5e-7"; it is not
+a float64 underflow (those sit near 1e-308)."""
+
+
+def _spearman_p_from_rho_n(rho: float, n: int) -> Optional[float]:
+    """Two-sided Spearman p from rho and n by the t approximation
+    (n - 2 degrees of freedom) that scipy.stats.spearmanr itself uses."""
+    if rho is None or n is None or n <= 3 or abs(rho) >= 1.0:
+        return None
+    try:
+        from scipy.stats import t as _t
+    except ImportError:
+        return None
+    stat = abs(rho) * float(np.sqrt((n - 2) / (1.0 - rho * rho)))
+    return float(2.0 * _t.sf(stat, n - 2))
+
+
+def _fmt_p(p: float, rho: Optional[float] = None, n: Optional[int] = None) -> str:
+    """p-value annotation, e.g. 'p = 3.0e-13'. A stored p below 1e-5 may have
+    been rounded to six decimals, so when rho and n are given it is
+    recomputed from them; a bare stored zero is reported as 'p < 5e-7'."""
+    if p is None:
+        return "p n/a"
+    if p < 1e-5 and rho is not None and n is not None:
+        p_re = _spearman_p_from_rho_n(rho, n)
+        if p_re is not None:
+            p = p_re
     if p <= 0.0:
-        return "p < 1e-300"
+        return f"p < {P_ROUNDING_FLOOR:.0e}".replace("e-0", "e-")
     if p < 0.001:
         return f"p = {p:.1e}"
     return f"p = {p:.3f}"
@@ -400,7 +426,7 @@ def make_fig3(d: Dict, out_dir: Path) -> None:
         ax_a.bar([xi], [rho], width=0.6, color=col, zorder=3,
                  edgecolor="white" if p < 0.05 else NS_COLOR,
                  linewidth=2.2 if p >= 0.05 else 0.0)
-        ax_a.annotate(f"ρ = {rho:.3f}\n{_fmt_p(p)}", xy=(xi, rho), xytext=(0, 8),
+        ax_a.annotate(f"ρ = {rho:.3f}\n{_fmt_p(p, rho, entry.get('residual_with_count_n_pairs'))}", xy=(xi, rho), xytext=(0, 8),
                       textcoords="offset points", ha="center", va="bottom",
                       fontsize=TICK_SIZE, color=TEXT_COLOR)
     ax_a.axhline(0, color=SPINE_COLOR, lw=1.0, zorder=2)
@@ -800,7 +826,7 @@ def make_fig5(d: Dict, out_dir: Path) -> None:
         ax.set_xlabel("Time post-irradiation (h)")
         _style_ax(ax)
 
-    axes[0].set_ylabel("Discriminative loop-size window\n(nm)")
+    axes[0].set_ylabel("Discriminative spatial scale\n(nm)")
 
     for i, (ax, (src, marker, _s, _l)) in enumerate(zip(axes, HEADLINE_PANELS)):
         _panel_label(ax, f"({chr(97 + i)})")

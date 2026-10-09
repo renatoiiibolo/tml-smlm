@@ -1,7 +1,7 @@
 """
 View 2 (functional), Tier 2 — robustness of the sparse-localization result.
 
-The localization module's fused-lasso fit picks out particular grid
+The localization module's smooth-lasso fit picks out particular grid
 positions along the birth-radius axis as discriminative. This module asks
 whether that selection is stable, via two checks against a set of
 "headline" marker/source/scale panels — the load-bearing findings the
@@ -19,7 +19,7 @@ densely-spaced grid points, neighboring tent-function columns are nearly
 collinear. Collinear predictors are the textbook case where an L1-type
 sparse selector picks a different member of a correlated cluster on a
 different CV split or subsample while the underlying signal is unchanged.
-A fused-lasso fit's balanced accuracy and even its number of nonzero
+A smooth-lasso fit's balanced accuracy and even its number of nonzero
 coefficients can look stable across seeds while the actual selected
 position moves — so this module tracks Jaccard overlap of the selected
 index sets, not just accuracy, to catch that failure mode directly.

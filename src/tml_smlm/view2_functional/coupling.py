@@ -85,7 +85,7 @@ logger = logging.getLogger(__name__)
 
 import tml_smlm.view2_functional.localization as localization
 import tml_smlm.view2_functional.robustness as robustness
-from tml_smlm.view3_metric.coupling import _residualise_against_timepoint
+from tml_smlm.view3_metric.coupling import _residualise_against_timepoint, _round_p
 
 MIN_PAIRS_FOR_CORR = 10
 KEY_COLS = ["source", "cell_type", "marker", "condition", "replicate"]
@@ -226,11 +226,11 @@ def process_panel(fm: pd.DataFrame, manifest: pd.DataFrame, diagrams_dir: Path, 
         "label": lbl, "source": source, "marker_a": marker_a, "marker_b": marker_b,
         "scale": scale, "core_indices_shared_grid": core_a, "n_pairs": len(paired),
         "grid_min_nm": round(float(grid[0]), 2), "grid_max_nm": round(float(grid[-1]), 2),
-        "raw_pooled_spearman_rho": round(float(rho_raw), 4), "raw_pooled_spearman_p": round(float(p_raw), 6),
+        "raw_pooled_spearman_rho": round(float(rho_raw), 4), "raw_pooled_spearman_p": _round_p(p_raw),
         "timepoint_resid_spearman_rho": round(float(rho_t), 4) if rho_t is not None else None,
-        "timepoint_resid_spearman_p": round(float(p_t), 6) if p_t is not None else None,
+        "timepoint_resid_spearman_p": _round_p(p_t) if p_t is not None else None,
         "timepoint_count_resid_spearman_rho": round(float(rho_c), 4) if rho_c is not None else None,
-        "timepoint_count_resid_spearman_p": round(float(p_c), 6) if p_c is not None else None,
+        "timepoint_count_resid_spearman_p": _round_p(p_c) if p_c is not None else None,
         "_interpretation": (
             "This asks whether the two markers' LANDSCAPE VALUES at the panel's own confirmed stable "
             "position(s) move together within one nucleus -- a position-specific, complementary question to "
